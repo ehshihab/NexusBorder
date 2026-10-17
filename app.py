@@ -14,36 +14,12 @@ import re
 st.set_page_config(page_title="NexusBorder - Enterprise Financial Copilot", page_icon="🌐", layout="wide", initial_sidebar_state="expanded")
 
 # --- Custom CSS for Strict Dark Mode & UI Fix ---
+# --- Custom CSS for Strict Dark Mode & UI Fix ---
+# --- Custom CSS for Adaptive Light & Dark Theme SaaS Look ---
 st.markdown("""
     <style>
-    /* Strict Dark Theme Override */
-    .stApp, .stApp *, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stToolbar"] {
-        background-color: #0B0F19 !important;
-        color: #F3F4F6 !important;
-    }
-    
-    /* Headers & Typography */
-    .main-header { font-size: 2.5rem; font-weight: 700; color: #FFFFFF; margin-bottom: 5px; font-family: 'Inter', sans-serif; }
-    .sub-header { font-size: 1.1rem; color: #9CA3AF; margin-bottom: 30px; font-family: 'Inter', sans-serif; }
-    
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] { background-color: #111827 !important; border-right: 1px solid #1F2937; }
-    .stRadio > div { gap: 10px; }
-    .stRadio > div > label { 
-        padding: 12px 15px; font-size: 16px; font-weight: 500; color: #D1D5DB;
-        border-radius: 8px; border-left: 4px solid transparent; transition: all 0.3s ease; 
-    }
-    .stRadio > div > label:hover { background: rgba(59, 130, 246, 0.1); }
-    .stRadio > div > label[data-checked="true"] { 
-        border-left: 4px solid #3B82F6; background: rgba(59, 130, 246, 0.15); color: #60A5FA;
-        box-shadow: -4px 0px 10px rgba(59, 130, 246, 0.3);
-    }
-
-    /* Quick Prompt Buttons & General Buttons */
+    /* Quick Prompt Buttons Styling */
     div.stButton > button {
-        background-color: #1F2937 !important;
-        border: 1px solid #374151 !important;
-        color: #F3F4F6 !important;
         border-radius: 12px !important;
         padding: 12px 16px !important;
         font-size: 14px !important;
@@ -52,46 +28,23 @@ st.markdown("""
     }
     div.stButton > button:hover {
         border-color: #3B82F6 !important;
-        color: #FFFFFF !important;
-        background-color: rgba(59, 130, 246, 0.2) !important;
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
     }
 
     /* Glassmorphism Chat Bubbles */
     div[data-testid="stChatMessage"] { 
-        border-radius: 12px; padding: 15px; margin-bottom: 12px; 
-        background: #111827 !important;
-        border: 1px solid rgba(255, 255, 255, 0.08); font-size: 15px;
-        color: #F3F4F6 !important;
+        border-radius: 12px; 
+        padding: 15px; 
+        margin-bottom: 12px; 
+        font-size: 15px;
     }
-    div[data-testid="stChatMessage"] p {
-        color: #F3F4F6 !important;
-    }
-    div[data-testid="stChatMessage"]:nth-child(even) { 
-        background: rgba(31, 41, 55, 0.7) !important; 
-        backdrop-filter: blur(10px); 
-        border: 1px solid rgba(59, 130, 246, 0.3); 
-    }
-    
-    /* Completely Fix Bottom Container / White Box Under Chat Input */
-    [data-testid="stBottom"], [data-testid="stBottomBlockContainer"], .stChatInputContainer {
-        background-color: #0B0F19 !important;
-    }
-    
+
+    /* Floating Chat Input Box Adjustment */
     [data-testid="stChatInput"] { 
-        bottom: 20px !important; margin: 0 auto; max-width: 800px; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.8) !important; 
+        bottom: 20px !important; 
+        margin: 0 auto; 
+        max-width: 800px; 
         border-radius: 16px !important; 
-        background-color: #1F2937 !important; 
-        border: 1px solid #374151 !important; 
-    }
-    [data-testid="stChatInput"] textarea {
-        color: #FFFFFF !important;
-        background-color: transparent !important;
-    }
-    
-    .block-container {
-        background-color: #0B0F19 !important;
     }
     </style>
 """, unsafe_allow_html=True)
