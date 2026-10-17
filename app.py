@@ -11,21 +11,23 @@ import secrets
 import re
 
 # --- Page Configuration ---
-st.set_page_config(page_title="NexusBorder - Enterprise Financial Copilot", page_icon="🌐", layout="wide")
+st.set_page_config(page_title="NexusBorder - Enterprise Financial Copilot", page_icon="🌐", layout="wide", initial_sidebar_state="expanded")
 
-# --- Custom CSS for Premium Enterprise UI (SaaS Look) ---
-# NOTE: Removed the global button override that was ruining action buttons.
+# --- Custom CSS for Strict Dark Mode & UI Fix ---
 st.markdown("""
     <style>
-    /* Dark Theme Background */
-    .stApp { background-color: #0B0F19; color: #F3F4F6; }
+    /* Strict Dark Theme Override */
+    .stApp, .stApp *, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stToolbar"] {
+        background-color: #0B0F19 !important;
+        color: #F3F4F6 !important;
+    }
     
     /* Headers & Typography */
     .main-header { font-size: 2.5rem; font-weight: 700; color: #FFFFFF; margin-bottom: 5px; font-family: 'Inter', sans-serif; }
     .sub-header { font-size: 1.1rem; color: #9CA3AF; margin-bottom: 30px; font-family: 'Inter', sans-serif; }
     
-    /* Sidebar Styling with Glowing Active State */
-    [data-testid="stSidebar"] { background-color: #111827; border-right: 1px solid #1F2937; }
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] { background-color: #111827 !important; border-right: 1px solid #1F2937; }
     .stRadio > div { gap: 10px; }
     .stRadio > div > label { 
         padding: 12px 15px; font-size: 16px; font-weight: 500; color: #D1D5DB;
@@ -37,20 +39,59 @@ st.markdown("""
         box-shadow: -4px 0px 10px rgba(59, 130, 246, 0.3);
     }
 
+    /* Quick Prompt Buttons & General Buttons */
+    div.stButton > button {
+        background-color: #1F2937 !important;
+        border: 1px solid #374151 !important;
+        color: #F3F4F6 !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+    }
+    div.stButton > button:hover {
+        border-color: #3B82F6 !important;
+        color: #FFFFFF !important;
+        background-color: rgba(59, 130, 246, 0.2) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+    }
+
     /* Glassmorphism Chat Bubbles */
     div[data-testid="stChatMessage"] { 
         border-radius: 12px; padding: 15px; margin-bottom: 12px; 
-        border: 1px solid rgba(255, 255, 255, 0.05); font-size: 15px;
+        background: #111827 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08); font-size: 15px;
+        color: #F3F4F6 !important;
+    }
+    div[data-testid="stChatMessage"] p {
+        color: #F3F4F6 !important;
     }
     div[data-testid="stChatMessage"]:nth-child(even) { 
-        background: rgba(31, 41, 55, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.2); 
+        background: rgba(31, 41, 55, 0.7) !important; 
+        backdrop-filter: blur(10px); 
+        border: 1px solid rgba(59, 130, 246, 0.3); 
     }
     
-    /* Floating Chat Input Box */
+    /* Completely Fix Bottom Container / White Box Under Chat Input */
+    [data-testid="stBottom"], [data-testid="stBottomBlockContainer"], .stChatInputContainer {
+        background-color: #0B0F19 !important;
+    }
+    
     [data-testid="stChatInput"] { 
-        bottom: 30px !important; margin: 0 auto; max-width: 800px; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.6); border-radius: 16px; 
-        background-color: #1F2937; border: 1px solid #374151; 
+        bottom: 20px !important; margin: 0 auto; max-width: 800px; 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.8) !important; 
+        border-radius: 16px !important; 
+        background-color: #1F2937 !important; 
+        border: 1px solid #374151 !important; 
+    }
+    [data-testid="stChatInput"] textarea {
+        color: #FFFFFF !important;
+        background-color: transparent !important;
+    }
+    
+    .block-container {
+        background-color: #0B0F19 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -93,7 +134,7 @@ app_mode = st.sidebar.radio("Modules", [
     "🏦 Sandbox Logs"
 ])
 
-# --- Dynamic Currency Fallback Mechanism (Fixed Model Name) ---
+# --- Dynamic Currency Fallback Mechanism ---
 @st.cache_data(ttl=3600)
 def get_live_rates(api_key_str):
     try:
@@ -122,14 +163,12 @@ if api_key:
     genai.configure(api_key=api_key)
     system_instruction = "You are an elite enterprise financial copilot for international students. Prioritize secure, concise, and compliant answers. Perform deep analysis based on global regulations."
     
-    # FIX 1: Explicitly using 'models/' prefix for stability
     model = genai.GenerativeModel(model_name="models/gemini-3.1-flash-lite", system_instruction=system_instruction)
 
     # 1. AI COPILOT
     if app_mode == "💬 AI Copilot":
         if len(st.session_state.messages) == 0:
             st.markdown("### Quick Prompts")
-            # FIX 3: Using native Streamlit buttons with use_container_width for clean layout without overriding global CSS
             cp_col1, cp_col2 = st.columns(2)
             with cp_col1:
                 if st.button("📊 Analyze my monthly spending & suggest an FX hedge plan.", key="btn_p1", use_container_width=True):
@@ -248,7 +287,6 @@ if api_key:
                 else:
                     with st.spinner("Simulating live query against OFAC, UN Sanctions, and AML databases..."):
                         try:
-                            # FIX 4: Explicit instruction to avoid mock data and simulate a live database validation.
                             ai_prompt = f"Analyze bank: '{sender_acc}' and purpose: '{purpose}'. Simulate a live validation against the latest OFAC sanction lists and international AML (Anti-Money Laundering) directives. Do not output generic mock data; evaluate the actual entity name provided. Return ONLY a valid JSON object containing: 'status' ('PASSED' or 'FAILED'), 'risk_score' (numeric 0-100), and 'reason' (detailed validation report based on real-world compliance context)."
                             audit_response = model.generate_content(ai_prompt)
                             res_text = audit_response.text.strip()
@@ -289,7 +327,7 @@ if api_key:
                 st.session_state.credit_score = base
                 st.rerun()
 
-    # 5. SMARTSPLIT (FIXED STATE UPDATE, TYPE CASTING & RERUN)
+    # 5. SMARTSPLIT
     elif app_mode == "👥 SmartSplit Ledger":
         st.subheader("👥 SmartSplit: Global Cohort Expense Ledger")
         
@@ -323,7 +361,6 @@ if api_key:
         
         if st.button("Autonomous Split & Rebalance", key="btn_split"):
             if total_members > 0:
-                # FIX 2: Strict explicit type-casting for float values to prevent unsupported operand TypeError
                 exp_amt_float = float(exp_amt)
                 per_head_float = exp_amt_float / float(total_members)
                 
@@ -338,7 +375,7 @@ if api_key:
                 st.session_state.split_balances = new_balances
                 st.rerun()
 
-    # 6. VISION INVOICE ENGINE (DUAL-PIPELINE)
+    # 6. VISION INVOICE ENGINE
     elif app_mode == "📄 Vision Invoice Engine":
         st.subheader("📄 AI Vision Tuition & Expense Analyzer")
         
@@ -350,7 +387,6 @@ if api_key:
             if st.button("Run Vision Audit & Strategic Analysis", key="btn_vision"):
                 with st.spinner("Running Dual-Pipeline Vision Extraction & Analysis..."):
                     try:
-                        # Dual Pipeline Prompt
                         v_prompt = """
                         1. Extract the Vendor Name, Total Amount (just the numeric value), and Currency. Put these EXACTLY in a JSON block starting with ```json and ending with ``` keys: 'vendor', 'amount', 'currency'.
                         2. BELOW the JSON block, write a comprehensive 'Strategic Analysis & Advice Report' tailored for an international student. Include tax compliance tips, budget optimization strategies, and currency exchange advice based on this invoice.
@@ -358,12 +394,10 @@ if api_key:
                         v_out = model.generate_content([v_prompt, img])
                         res_text = v_out.text.strip()
                         
-                        # Parse JSON Block
                         json_match = re.search(r'```json(.*?)```', res_text, re.DOTALL)
                         if json_match:
                             json_str = json_match.group(1).strip()
                             st.session_state.vision_data = json.loads(json_str)
-                            # The advice is the rest of the text
                             st.session_state.vision_advice = res_text.replace(json_match.group(0), "").strip()
                         else:
                             st.error("Model failed to strictly format the JSON output.")
